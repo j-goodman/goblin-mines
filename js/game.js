@@ -44,6 +44,26 @@ let loadSprites = () => {
       'walk-left': new Sprite (trollLeft, 8),
     }
 
+    let floors = [
+        new Image (),
+        new Image (),
+        new Image (),
+        new Image (),
+    ]
+    floors[0].src = 'images/floors/dirt-0.png'
+    floors[1].src = 'images/floors/dirt-1.png'
+    floors[2].src = 'images/floors/dirt-2.png'
+    floors[3].src = 'images/floors/dirt-3.png'
+    floors.forEach(floor => {
+        allImages.push(floor)
+    })
+    game.spriteSets.floor = {
+      'dirt-0': new Sprite (floors[0], 1),
+      'dirt-1': new Sprite (floors[1], 1),
+      'dirt-2': new Sprite (floors[2], 1),
+      'dirt-3': new Sprite (floors[3], 1),
+    }
+
     let loadInterval = setInterval(() => {
         let finished = true
         allImages.forEach(img => {
@@ -66,11 +86,11 @@ let drawLine = (ax, ay, bx, by) => {
     ctx.stroke()
 }
 
-let drawGridLines = (width, height) => {
+let drawRoom = (width, height) => {
     let x = 0 ; let y = 0
     let gridWidth = canvas.width - 40
     let gridHeight = canvas.height - 240
-    game.displayOrigin = {x: 380, y: 565}
+    game.displayOrigin = {x: 380, y: 550}
     game.cellSize = {width: gridWidth / width, height: gridHeight / height}
     while (y <= height) {
         drawLine(20, 180 + gridHeight / height * y, 1260, 180 + gridHeight / height * y)
@@ -80,10 +100,23 @@ let drawGridLines = (width, height) => {
         drawLine(20 + gridWidth / width * x, 180, 20 + gridWidth / width * x, 900)
         x++
     }
+
+    // Draw floors
+    y = 0
+    while (y < height) {
+        x = 0
+        while (x < width) {
+            let type = Math.abs(x + y - (x * x)) % game.room.floorSmoothness
+            type = type > 3 ? 2 : type
+            game.spriteSets.floor[`dirt-${type}`].draw(x * game.cellSize.width + 400, y * game.cellSize.height + 440, game.cellSize.width + 8)
+            x++
+        }
+        y++
+    }
 }
 
 let setupGame = () => {
-    game.room = new Room (12, 12)
+    game.room = new Room (10, 10)
     game.player = new Walker (3, 3, game.spriteSets.goblin, game.room)
     setupControls()
     game.update()
@@ -98,7 +131,7 @@ let setupGame = () => {
 
 game.update = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    drawGridLines(game.room.width, game.room.height)
+    drawRoom(game.room.width, game.room.height)
     game.room.draw()
 }
 
@@ -110,6 +143,7 @@ let Room = function (width, height) {
     game.assignId(this)
     this.width = width
     this.height = height
+    this.floorSmoothness = Math.floor(Math.random() * 6) + 7
     this.walkers = []
     this.grid = {}
     forEachInMatrix(width, height, (x, y) => {
