@@ -86,23 +86,13 @@ let drawLine = (ax, ay, bx, by) => {
     ctx.stroke()
 }
 
-let drawRoom = (width, height) => {
+let drawFloor = (width, height) => {
     let x = 0 ; let y = 0
     let gridWidth = canvas.width - 40
     let gridHeight = canvas.height - 240
     game.displayOrigin = {x: 380, y: 550}
     game.cellSize = {width: gridWidth / width, height: gridHeight / height}
-    while (y <= height) {
-        drawLine(20, 180 + gridHeight / height * y, 1260, 180 + gridHeight / height * y)
-        y++
-    }
-    while (x <= width) {
-        drawLine(20 + gridWidth / width * x, 180, 20 + gridWidth / width * x, 900)
-        x++
-    }
-
-    // Draw floors
-    y = 0
+    console.log(game.room.floorSmoothness)
     while (y < height) {
         x = 0
         while (x < width) {
@@ -131,7 +121,7 @@ let setupGame = () => {
 
 game.update = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    drawRoom(game.room.width, game.room.height)
+    drawFloor(game.room.width, game.room.height)
     game.room.draw()
 }
 
@@ -143,7 +133,7 @@ let Room = function (width, height) {
     game.assignId(this)
     this.width = width
     this.height = height
-    this.floorSmoothness = Math.floor(Math.random() * 6) + 7
+    this.floorSmoothness = Math.floor(Math.random() * 11) + 6
     this.walkers = []
     this.grid = {}
     forEachInMatrix(width, height, (x, y) => {
