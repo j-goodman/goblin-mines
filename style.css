@@ -3,11 +3,14 @@ body {
     background: #000;
     display: flex;
     justify-content: center;
+    perspective: 500px;
+    transform: translateY(-60px);
 }
 
 canvas {
     background: #000;
     height: auto;
+    transform: rotateX(9deg) translateY(-10px);
     width: 75%;
-    /* width: 60%; */
+    width: 60%;
 }

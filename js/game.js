@@ -64,6 +64,24 @@ let loadSprites = () => {
       'dirt-3': new Sprite (floors[3], 1),
     }
 
+    let columns = [
+        new Image (),
+        new Image (),
+        new Image (),
+        new Image (),
+    ]
+    columns[0].src = 'images/column-0.png'
+    columns[1].src = 'images/column-1.png'
+    columns[2].src = 'images/column-2.png'
+    columns.forEach(column => {
+        allImages.push(column)
+    })
+    game.spriteSets.column = {
+      'column-0': new Sprite (columns[0], 1),
+      'column-1': new Sprite (columns[1], 1),
+      'column-2': new Sprite (columns[2], 1),
+    }
+
     let loadInterval = setInterval(() => {
         let finished = true
         allImages.forEach(img => {
@@ -90,13 +108,12 @@ let drawFloor = (width, height) => {
     let x = 0 ; let y = 0
     let gridWidth = canvas.width - 40
     let gridHeight = canvas.height - 240
-    game.displayOrigin = {x: 380, y: 550}
+    game.displayOrigin = {x: 368, y: 524}
     game.cellSize = {width: gridWidth / width, height: gridHeight / height}
-    console.log(game.room.floorSmoothness)
     while (y < height) {
         x = 0
         while (x < width) {
-            let type = Math.abs(x + y - (x * x)) % game.room.floorSmoothness
+            let type = Math.abs(2 + x + y * 2 - (x * x)) % game.room.floorPatternSeed
             type = type > 3 ? 2 : type
             game.spriteSets.floor[`dirt-${type}`].draw(x * game.cellSize.width + 400, y * game.cellSize.height + 440, game.cellSize.width + 8)
             x++
@@ -133,13 +150,14 @@ let Room = function (width, height) {
     game.assignId(this)
     this.width = width
     this.height = height
-    this.floorSmoothness = Math.floor(Math.random() * 11) + 6
+    this.floorPatternSeed = Math.floor(Math.random() * 11) + 6
     this.walkers = []
     this.grid = {}
     forEachInMatrix(width, height, (x, y) => {
         this.grid[x] = this.grid[x] ? this.grid[x] : {}
         this.grid[x][y] = new Cell ()
     })
+    this.buildColumns()
 }
 
 Room.prototype.draw = function () {
@@ -149,6 +167,29 @@ Room.prototype.draw = function () {
             cell.content.draw()
         }
     })
+}
+
+Room.prototype.buildColumns = function () {
+    // let column = new Block (7, 7, game.spriteSets.column['column-2'], this)
+}
+
+let Block = function (x, y, sprite, room) {
+    game.assignId(this)
+    this.room = room
+    this.sprite = sprite
+    this.pos = {
+        x: x,
+        y: y,
+    }
+    room.grid[x][y].content = this
+}
+
+Block.prototype.draw = function () {
+    this.sprite.draw(
+        game.displayOrigin.x + game.cellSize.width * this.pos.x,
+        game.displayOrigin.y + game.cellSize.height * this.pos.y,
+        game.cellSize.width,
+    )
 }
 
 let Walker = function (x, y, spriteSet, room) {
@@ -210,8 +251,8 @@ Walker.prototype.walk = function (x, y) {
         this.room.grid[this.pos.x + this.walkDirection.x][this.pos.y + this.walkDirection.y].content
     ) {
         let xPath = this.room.grid[this.pos.x + this.walkDirection.x]
-        let yPath = this.room.grid[this.pos.y + this.walkDirection.y]
-        if (!xPath || xPath.content) {
+        let yPath = this.room.grid[this.pos.x][this.pos.y + this.walkDirection.y]
+        if (!xPath || xPath[this.pos.y].content) {
             this.walkDirection.x = 0
         }
         if (!yPath || yPath.content) {
