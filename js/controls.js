@@ -4,6 +4,7 @@ let setupControls = () => {
             case 'a':
             case 'ArrowLeft':
                 game.player.direction.x = -1
+                game.player.sprite = game.player.spriteSet['walk-left']
                 break
             case 'w':
             case 'ArrowUp':
@@ -12,6 +13,7 @@ let setupControls = () => {
             case 'd':
             case 'ArrowRight':
                 game.player.direction.x = 1
+                game.player.sprite = game.player.spriteSet['walk-right']
                 break;
             case 's':
             case 'ArrowDown':
