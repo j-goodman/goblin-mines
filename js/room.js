@@ -109,3 +109,7 @@ Room.prototype.drawDoors = function () {
         door.draw()
     })
 }
+
+let Cell = function () {
+    this.content = null
+}
