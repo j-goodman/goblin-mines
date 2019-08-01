@@ -1,9 +1,10 @@
-let Room = function (width, height, enterFrom = 'left') {
+let Room = function (width, height, enterFrom = 'left', secondDoor = false) {
     game.assignId(this)
     this.width = width
     this.height = height
     this.floorPatternSeed = Math.floor(Math.random() * 11) + 6
-    this.wallPatternSeed = Math.floor(Math.random() * 32) + (40 - width)
+    this.wallPatternSeed = Math.floor(Math.random() * 40) + (40 - width)
+    this.secondDoor = secondDoor
     this.walkers = []
     this.doors = []
     this.grid = {}
@@ -51,8 +52,13 @@ Room.prototype.buildDoors = function (side) {
         side
     )
     this.doors.push(door)
-    let secondY = (Math.floor(Math.random() * this.height))
-    if (!Math.floor(Math.random() * 10) && Math.abs(firstY - secondY) > 2) {
+    if (this.secondDoor || (!Math.floor(Math.random() * 10))) {
+        let i = 0
+        let secondY = (Math.floor(Math.random() * this.height))
+        while (i < 1000 && Math.abs(firstY - secondY) <= 2 ) {
+          secondY = (Math.floor(Math.random() * this.height))
+          i++
+        }
         let secondDoor = new Door (
             side === 'right' ? this.width - 1 : 0,
             secondY,

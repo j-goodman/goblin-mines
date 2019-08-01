@@ -31,7 +31,7 @@ let setupGame = () => {
 
     game.displayOrigin = {x: -7, y: -20}
     game.renderOrigin = {x: 100, y: 0}
-    game.room = new Room (size, size)
+    game.room = new Room (size, size, null, true)
 
     game.updateSizing()
 

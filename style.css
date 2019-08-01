@@ -12,5 +12,5 @@ canvas {
     height: auto;
     transform: rotateX(9deg) translateY(-10px);
     width: 70%;
-    width: 88%;
+    /* width: 88%; */
 }
