@@ -17,8 +17,8 @@ Sprite.prototype.draw = function (x, y, width = 0) {
         0,
         this.image.width / this.frames,
         this.image.height,
-        x - (this.image.width / this.frames / 2) + 400 + this.offset.x,
-        y - (this.image.height * scale) + 300 + this.offset.y,
+        x - (this.image.width / this.frames / 2) + 400 + this.offset.x + game.renderOrigin.x,
+        y - (this.image.height * scale) + 300 + this.offset.y + game.renderOrigin.y,
         this.image.width / this.frames * scale,
         this.image.height * scale
     )

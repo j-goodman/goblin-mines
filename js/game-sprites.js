@@ -24,6 +24,17 @@ let loadSprites = () => {
       'walk-left': new Sprite (trollLeft, 8),
     }
 
+    let doorRight = new Image ()
+    let doorLeft = new Image ()
+    doorRight.src = 'images/door-right.png'
+    doorLeft.src = 'images/door-left.png'
+    allImages.push(doorRight)
+    allImages.push(doorLeft)
+    game.spriteSets.door = {
+      'right': new Sprite (doorRight, 1, 0, 18),
+      'left': new Sprite (doorLeft, 1, 0, 18),
+    }
+
     let floors = [
         new Image (),
         new Image (),
