@@ -9,8 +9,8 @@ let loadSprites = () => {
     allImages.push(goblinRight)
     allImages.push(goblinLeft)
     game.spriteSets.goblin = {
-      'walk-right': new Sprite (goblinRight, 8),
-      'walk-left': new Sprite (goblinLeft, 8),
+      'walk-right': new Sprite (goblinRight, 8, -20),
+      'walk-left': new Sprite (goblinLeft, 8, -20),
     }
 
     let trollRight = new Image ()
@@ -49,17 +49,20 @@ let loadSprites = () => {
         new Image (),
         new Image (),
         new Image (),
+        new Image (),
     ]
     columns[0].src = 'images/column-0.png'
     columns[1].src = 'images/column-1.png'
     columns[2].src = 'images/column-2.png'
+    columns[3].src = 'images/column-3.png'
     columns.forEach(column => {
         allImages.push(column)
     })
     game.spriteSets.column = {
-      'column-0': new Sprite (columns[0], 1),
-      'column-1': new Sprite (columns[1], 1),
-      'column-2': new Sprite (columns[2], 1),
+        'column-0': new Sprite (columns[0], 1),
+        'column-1': new Sprite (columns[1], 1),
+        'column-2': new Sprite (columns[2], 1),
+        'column-3': new Sprite (columns[3], 1),
     }
 
     let loadInterval = setInterval(() => {

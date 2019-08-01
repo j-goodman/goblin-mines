@@ -50,21 +50,7 @@ Walker.prototype.walk = function (x, y) {
         y: y,
     }
 
-    // Check for obstacles
-    if (
-        !this.room.grid[this.pos.x + this.walkDirection.x] ||
-        !this.room.grid[this.pos.x + this.walkDirection.x][this.pos.y + this.walkDirection.y] ||
-        this.room.grid[this.pos.x + this.walkDirection.x][this.pos.y + this.walkDirection.y].content
-    ) {
-        let xPath = this.room.grid[this.pos.x + this.walkDirection.x]
-        let yPath = this.room.grid[this.pos.x][this.pos.y + this.walkDirection.y]
-        if (!xPath || xPath[this.pos.y].content) {
-            this.walkDirection.x = 0
-        }
-        if (!yPath || yPath.content) {
-            this.walkDirection.y = 0
-        }
-    }
+    this.checkForObstacles()
 
     // Assign directional sprite
     if (this.walkDirection.x === -1) {
@@ -75,6 +61,25 @@ Walker.prototype.walk = function (x, y) {
         this.sprite = this.sprite === this.spriteSet['walk-right'] ?
         this.spriteSet['walk-left']:
         this.spriteSet['walk-right']
+    }
+}
+
+Walker.prototype.checkForObstacles = function () {
+    if (
+        this.room.gridAt( // Check for obstacle at destination
+            this.pos.x + this.walkDirection.x, this.pos.y + this.walkDirection.y
+        ) ||
+        this.walkDirection.x && this.walkDirection.y // if diagonal, check at waypoints
+    ) {
+        if (this.room.gridAt(this.pos.x + this.walkDirection.x, this.pos.y)) {
+            this.walkDirection.x = 0
+        }
+        if (this.room.gridAt(this.pos.x, this.pos.y + this.walkDirection.y)) {
+            this.walkDirection.y = 0
+        }
+        if (this.room.gridAt(this.pos.x + this.walkDirection.x, this.pos.y + this.walkDirection.y)) {
+            this.walkDirection[['x', 'y'][(1 + this.pos.x + this.pos.y) % 2]] = 0
+        }
     }
 }
 

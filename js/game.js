@@ -30,14 +30,14 @@ let drawFloor = (width, height) => {
     let x = 0 ; let y = 0
     let gridWidth = canvas.width - 40
     let gridHeight = canvas.height - 240
-    game.displayOrigin = {x: 368, y: 524}
+    game.displayOrigin = {x: -7, y: -20}
     game.cellSize = {width: gridWidth / width, height: gridHeight / height}
     while (y < height) {
         x = 0
         while (x < width) {
             let type = Math.abs(2 + x + y * 2 - (x * x)) % game.room.floorPatternSeed
             type = type > 3 ? 2 : type
-            game.spriteSets.floor[`dirt-${type}`].draw(x * game.cellSize.width + 400, y * game.cellSize.height + 440, game.cellSize.width + 8)
+            game.spriteSets.floor[`dirt-${type}`].draw(x * game.cellSize.width, y * game.cellSize.height, game.cellSize.width + 8)
             x++
         }
         y++
@@ -73,6 +73,7 @@ let Room = function (width, height) {
     this.width = width
     this.height = height
     this.floorPatternSeed = Math.floor(Math.random() * 11) + 6
+    this.wallPatternSeed = Math.floor(Math.random() * 32) + 24
     this.walkers = []
     this.grid = {}
     forEachInMatrix(width, height, (x, y) => {
@@ -92,7 +93,30 @@ Room.prototype.draw = function () {
 }
 
 Room.prototype.buildColumns = function () {
-    // let column = new Block (7, 7, game.spriteSets.column['column-2'], this)
+    let x = 2 ; let y = 2
+    while (y < this.height) {
+        x = 2
+        while (x < this.width) {
+            let type = Math.abs((x * x) + (y * y)) % this.wallPatternSeed
+            type = type > 3 ? false : type
+            if (type || type === 0) {
+                let column = new Block (x - 1, y - 1, game.spriteSets.column[`column-${type}`], this)
+            }
+            x++
+        }
+        y++
+    }
+}
+
+Room.prototype.gridAt = function (x, y) {
+    if (!this.grid[x]) {
+        return 'Empty'
+    } else if (!this.grid[x][y]) {
+        return 'Empty'
+    } else {
+        return this.grid[x][y].content
+
+    }
 }
 
 let Block = function (x, y, sprite, room) {

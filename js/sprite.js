@@ -1,7 +1,11 @@
-let Sprite = function (image, frames) {
+let Sprite = function (image, frames, offsetX = 0, offsetY = 0) {
     this.image = image
     this.frames = frames
     this.frame = 0
+    this.offset = {
+        x: offsetX,
+        y: offsetY
+    }
 }
 
 Sprite.prototype.draw = function (x, y, width = 0) {
@@ -13,8 +17,8 @@ Sprite.prototype.draw = function (x, y, width = 0) {
         0,
         this.image.width / this.frames,
         this.image.height,
-        x - (this.image.width / this.frames / 2),
-        y - (this.image.height / 2),
+        x - (this.image.width / this.frames / 2) + 400 + this.offset.x,
+        y - (this.image.height * scale) + 300 + this.offset.y,
         this.image.width / this.frames * scale,
         this.image.height * scale
     )
