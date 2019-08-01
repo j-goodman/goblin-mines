@@ -2,11 +2,12 @@ let Walker = function (x, y, spriteSet, room) {
     game.assignId(this)
     this.room = room
     this.walking = false
-    this.intervalAction = null
     this.speed = 8
     room.walkers.push(this)
     this.spriteSet = spriteSet
+    this.blocking = true
     this.sprite = spriteSet['walk-right']
+    this.onDoor = false
     this.pos = {
         x: x,
         y: y,
@@ -50,6 +51,16 @@ Walker.prototype.walk = function (x, y) {
         y: y,
     }
 
+    if (this.onDoor) {
+        if (
+            (this.direction.x === 1 && this.onDoor.side === 'right') ||
+            (this.direction.x === -1 && this.onDoor.side === 'left')
+        ) {
+            this.useDoor(this.onDoor)
+            this.onDoor = false
+        }
+    }
+
     this.checkForObstacles()
 
     // Assign directional sprite
@@ -66,20 +77,34 @@ Walker.prototype.walk = function (x, y) {
 
 Walker.prototype.checkForObstacles = function () {
     if (
-        this.room.gridAt( // Check for obstacle at destination
+        this.room.gridBlockedAt( // Check for obstacle at destination
             this.pos.x + this.walkDirection.x, this.pos.y + this.walkDirection.y
         ) ||
         this.walkDirection.x && this.walkDirection.y // if diagonal, check at waypoints
     ) {
-        if (this.room.gridAt(this.pos.x + this.walkDirection.x, this.pos.y)) {
+        if (this.room.gridBlockedAt(this.pos.x + this.walkDirection.x, this.pos.y)) {
             this.walkDirection.x = 0
         }
-        if (this.room.gridAt(this.pos.x, this.pos.y + this.walkDirection.y)) {
+        if (this.room.gridBlockedAt(this.pos.x, this.pos.y + this.walkDirection.y)) {
             this.walkDirection.y = 0
         }
-        if (this.room.gridAt(this.pos.x + this.walkDirection.x, this.pos.y + this.walkDirection.y)) {
+        if (this.room.gridBlockedAt(this.pos.x + this.walkDirection.x, this.pos.y + this.walkDirection.y)) {
             this.walkDirection[['x', 'y'][(1 + this.pos.x + this.pos.y) % 2]] = 0
         }
+    }
+    let walkingOnto = this.room.gridAt(this.pos.x + this.walkDirection.x, this.pos.y + this.walkDirection.y)
+    if (walkingOnto) {
+        this.checkForDoor(walkingOnto)
+    } else {
+        this.onDoor = false
+    }
+}
+
+Walker.prototype.checkForDoor = function (door) {
+    if (door.name === 'door') {
+        this.onDoor = door
+    } else {
+        this.onDoor = false
     }
 }
 
@@ -103,6 +128,31 @@ Walker.prototype.manageWalk = function () {
         this.offset.y = 0
         this.move(0, 0)
     }
+}
+
+Walker.prototype.useDoor = function (door) {
+    if (!door.into) {
+        door.makeRoom('into')
+    }
+    if (!door.from) {
+        door.makeRoom('from')
+    }
+    let destination = this.room === door.from ? door.into : door.from
+    if (this === game.player) {
+        game.room = destination
+        game.updateSizing()
+    }
+    this.room.walkers = this.room.walkers.filter(walker => {
+        return walker.id !== this.id
+    })
+    this.room.grid[this.pos.x][this.pos.y].content = null
+    this.pos = {
+        x: door.twin.pos.x,
+        y: door.twin.pos.y
+    }
+    destination.walkers.push(this)
+    destination.grid[this.pos.x][this.pos.y].content = this
+    this.room = destination
 }
 
 Walker.prototype.act = function (x, y) {

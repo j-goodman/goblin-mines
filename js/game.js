@@ -28,15 +28,13 @@ let drawLine = (ax, ay, bx, by) => {
 
 let setupGame = () => {
     let size = Math.floor(Math.random() * 7) + 7
-    size = 10
 
-    let gridWidth = canvas.width - 240
-    let gridHeight = canvas.height - 240
     game.displayOrigin = {x: -7, y: -20}
     game.renderOrigin = {x: 100, y: 0}
-    game.cellSize = {width: gridWidth / size, height: gridHeight / size}
-
     game.room = new Room (size, size)
+
+    game.updateSizing()
+
     game.player = new Walker (3, 3, game.spriteSets.goblin, game.room)
     setupControls()
     game.update()
@@ -50,6 +48,14 @@ let setupGame = () => {
     }, 30)
 }
 
+game.updateSizing = () => {
+    let gridWidth = canvas.width - 240
+    let gridHeight = canvas.height - 240
+    game.cellSize = {
+        width: gridWidth / game.room.width, height: gridHeight / game.room.width
+    }
+}
+
 game.update = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     game.room.drawDoors()
@@ -61,33 +67,45 @@ let Cell = function () {
     this.content = null
 }
 
-let Door = function (x, y, from, to) {
+let Door = function (x, y, from, into, side, twin = null) {
     this.pos = {
         x: x,
-        y: y
+        y: y,
     }
-    this.offset = {
-        x: -3,
-        y: 0
-    }
-    this.sprite = game.spriteSets.door['right']
+    this.twin = twin
+    this.from = from
+    this.into = into
+    this.name = 'door'
+    this.side = side
+    this.from.grid[x][y].door = this
+    this.sprite = game.spriteSets.floor['dirt-0']
 }
 
 Door.prototype.draw = function () {
     this.sprite.draw(
-        game.displayOrigin.x + game.cellSize.width * this.pos.x + this.offset.x,
-        game.displayOrigin.y + game.cellSize.height * this.pos.y + this.offset.y,
-        game.cellSize.width * 0.78,
+        (this.pos.x + (this.side === 'left' ? -1 : 1)) * game.cellSize.width,
+        this.pos.y * game.cellSize.height,
+        game.cellSize.width + 8
     )
+}
+
+Door.prototype.makeRoom = function (inOrOut) {
+    let size = Math.floor(Math.random() * 7) + 7
+    let newSide = this.side === 'left' ? 'right' : 'left'
+    let room = new Room (size, size, newSide)
+    this.twin = new Door (newSide === 'left' ? 0 : size -1, Math.floor(Math.random() * size), room, this.from, newSide, this)
+    room.doors.push(this.twin)
+    this[inOrOut] = room
 }
 
 let Block = function (x, y, sprite, room) {
     game.assignId(this)
     this.room = room
     this.sprite = sprite
+    this.blocking = true
     this.pos = {
         x: x,
-        y: y,
+        y: y
     }
     room.grid[x][y].content = this
 }

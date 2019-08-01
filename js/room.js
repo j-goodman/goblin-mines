@@ -1,4 +1,4 @@
-let Room = function (width, height) {
+let Room = function (width, height, enterFrom = 'left') {
     game.assignId(this)
     this.width = width
     this.height = height
@@ -12,7 +12,7 @@ let Room = function (width, height) {
         this.grid[x][y] = new Cell ()
     })
     this.buildColumns()
-    this.buildDoors()
+    this.buildDoors(enterFrom)
 }
 
 Room.prototype.draw = function () {
@@ -40,19 +40,52 @@ Room.prototype.buildColumns = function () {
     }
 }
 
-Room.prototype.buildDoors = function () {
-    let door = new Door (this.width, (Math.floor(Math.random() * this.height)), this, null)
+Room.prototype.buildDoors = function (side) {
+    side = 'right'
+    let firstY = (Math.floor(Math.random() * this.height))
+    let door = new Door (
+        side === 'right' ? this.width - 1 : 0,
+        firstY,
+        this,
+        null,
+        side
+    )
     this.doors.push(door)
+    let secondY = (Math.floor(Math.random() * this.height))
+    if (!Math.floor(Math.random() * 10) && Math.abs(firstY - secondY) > 2) {
+        let secondDoor = new Door (
+            side === 'right' ? this.width - 1 : 0,
+            secondY,
+            this,
+            null,
+            side
+        )
+        this.doors.push(secondDoor)
+    }
 }
 
 Room.prototype.gridAt = function (x, y) {
     if (!this.grid[x]) {
-        return 'Empty'
+        return 'offgrid'
     } else if (!this.grid[x][y]) {
-        return 'Empty'
+        return 'offgrid'
+    } else if (this.grid[x][y].door) {
+        return this.grid[x][y].door
     } else {
         return this.grid[x][y].content
+    }
+}
 
+Room.prototype.gridBlockedAt = function (x, y) {
+    if (!this.grid[x]) {
+        return 'offgrid'
+    } else if (!this.grid[x][y]) {
+        return 'offgrid'
+    } else {
+        if (this.grid[x][y].content) {
+            return this.grid[x][y].content.blocking
+        }
+        return false
     }
 }
 
