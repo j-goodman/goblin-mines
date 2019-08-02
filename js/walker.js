@@ -39,6 +39,9 @@ Walker.prototype.move = function (x, y) {
     this.pos.y += y
     this.room.grid[this.pos.x][this.pos.y].content = this
     this.moving = false
+    if (this === game.player) {
+        game.playAudio(`footfall-${this.room.floorType}`)
+    }
     if (!this.direction.x && !this.direction.y) {
         this.sprite.frame = 0
     }
@@ -139,6 +142,7 @@ Walker.prototype.useDoor = function (door) {
     }
     let destination = this.room === door.from ? door.into : door.from
     if (this === game.player) {
+        game.playAudio('door-dirt')
         game.room = destination
         game.updateSizing()
     }
