@@ -3,10 +3,11 @@ let Room = function (width, height, enterFrom = 'left', secondDoor = false) {
     this.width = width
     this.height = height
     this.floorPatternSeed = Math.floor(Math.random() * 11) + 6
-    this.wallPatternSeed = Math.floor(Math.random() * 40) + (40 - width)
+    this.wallPatternSeed = Math.floor(Math.random() * 40) + (42 - width)
     this.secondDoor = secondDoor
     this.walkers = []
     this.doors = []
+    this.floorType = 'dirt'
     this.grid = {}
     forEachInMatrix(width, height, (x, y) => {
         this.grid[x] = this.grid[x] ? this.grid[x] : {}
@@ -31,7 +32,7 @@ Room.prototype.buildColumns = function () {
         x = 2
         while (x < this.width) {
             let type = Math.abs((x * x) + (y * y)) % this.wallPatternSeed
-            type = type > 3 ? false : type
+            type = type > 5 ? false : type
             if (type || type === 0) {
                 let column = new Block (x - 1, y - 1, game.spriteSets.column[`column-${type}`], this)
             }
@@ -103,7 +104,7 @@ Room.prototype.drawFloor = function () {
         while (x < width) {
             let type = Math.abs(2 + x + y * 2 - (x * x)) % game.room.floorPatternSeed
             type = type > 3 ? 2 : type
-            game.spriteSets.floor[`dirt-${type}`].draw(x * game.cellSize.width, y * game.cellSize.height, game.cellSize.width + 8)
+            game.spriteSets.floor[`${this.floorType}-${type}`].draw(x * game.cellSize.width, y * game.cellSize.height, game.cellSize.width + 8)
             x++
         }
         y++

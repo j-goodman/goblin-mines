@@ -61,11 +61,15 @@ let loadSprites = () => {
         new Image (),
         new Image (),
         new Image (),
+        new Image (),
+        new Image (),
     ]
     columns[0].src = 'images/column-0.png'
     columns[1].src = 'images/column-1.png'
     columns[2].src = 'images/column-2.png'
     columns[3].src = 'images/column-3.png'
+    columns[4].src = 'images/column-4.png'
+    columns[5].src = 'images/column-5.png'
     columns.forEach(column => {
         allImages.push(column)
     })
@@ -74,6 +78,8 @@ let loadSprites = () => {
         'column-1': new Sprite (columns[1], 1),
         'column-2': new Sprite (columns[2], 1),
         'column-3': new Sprite (columns[3], 1),
+        'column-4': new Sprite (columns[4], 1),
+        'column-5': new Sprite (columns[5], 1),
     }
 
     let loadInterval = setInterval(() => {

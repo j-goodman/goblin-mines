@@ -8,7 +8,6 @@ body {
 }
 
 canvas {
-    background: #000;
     height: auto;
     transform: rotateX(9deg) translateY(-10px);
     width: 68%;

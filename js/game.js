@@ -2,6 +2,7 @@ onload = () => {
     window.canvas = document.getElementsByTagName('canvas')[0]
     window.ctx = canvas.getContext('2d')
     loadSprites()
+    loadAudio()
     window.spritesLoaded = () => {
         setupGame()
     }
