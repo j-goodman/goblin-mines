@@ -9,8 +9,19 @@ let loadSprites = () => {
     allImages.push(goblinRight)
     allImages.push(goblinLeft)
     game.spriteSets.goblin = {
-      'walk-right': new Sprite (goblinRight, 8, -20),
-      'walk-left': new Sprite (goblinLeft, 8, -20),
+        'walk-right': new Sprite (goblinRight, 8, -20),
+        'walk-left': new Sprite (goblinLeft, 8, -20),
+    }
+
+    let evileyeRight = new Image ()
+    let evileyeLeft = new Image ()
+    evileyeRight.src = 'images/evileye_walk-right.png'
+    evileyeLeft.src = 'images/evileye_walk-left.png'
+    allImages.push(evileyeRight)
+    allImages.push(evileyeLeft)
+    game.spriteSets.evileye = {
+        'walk-right': new Sprite (evileyeRight, 8, 180),
+        'walk-left': new Sprite (evileyeLeft, 8, 180),
     }
 
     let trollRight = new Image ()
@@ -20,8 +31,8 @@ let loadSprites = () => {
     allImages.push(trollRight)
     allImages.push(trollLeft)
     game.spriteSets.troll = {
-      'walk-right': new Sprite (trollRight, 8),
-      'walk-left': new Sprite (trollLeft, 8),
+        'walk-right': new Sprite (trollRight, 8),
+        'walk-left': new Sprite (trollLeft, 8),
     }
 
     let doorRight = new Image ()
